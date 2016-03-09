@@ -6,3 +6,7 @@ Couple of settings needed:
 2) Set if you wish to see specials - N for No, Y for yes (line 17)
 3) Set single show to Y/N - If Yes it will only check one show based on id provided on line 166. - This is really to test
 
+
+You will need mysqldb installed on the pi
+sudo apt-get update
+sudo apt-get install python-mysqldb
