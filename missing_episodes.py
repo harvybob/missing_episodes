@@ -1,3 +1,4 @@
+#v1.5 - put logging back in
 #v1.4 - includes a check for current date, and only looks at episodes that are prior to today
 #v1.3 - highlight duplicates
 #v1.2 - exclude specials from output if not wanted
@@ -17,16 +18,21 @@ current_show_name = ""
 specials = "N"
 single_show = "N"
 todays_date=datetime.datetime.now().date()
+import logging
+logging.basicConfig(filename='/home/pi/kodi_missing_errors.log', level=logging.INFO,
+                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
+logger=logging.getLogger(__name__)
+
 
 
 
 def select_sql(command):
-    """Will execute a select command onto the schema on mysql host and return the value"""
+    """Will execute a select command onto the pi schema on 192.168.1.100 and return the value"""
     
     try:
 ## host, userid, password, database instance
       
-      con = mdb.connect('IP', 'USER', 'PASS', 'CURRENTSCHEMA');
+      con = mdb.connect('192.168.1.100', 'xbmc', 'xbmc', 'xbmc_video90');
       cursor = con.cursor()
         
       sql = command
@@ -152,18 +158,20 @@ def main():
     if single_show <> "Y":
   
         get_series_ids()
+        skip_list=['73028','112061','213551','75682','83231','79177','72449','76318','82438','268094','76290','191591','78890','73255','83237','75340','80863','81253','78286','278462','83708','84947']
         for i in range(0,len(series_list)):
             series_id=series_list[i][0]
-            get_episodes_for_series_id(series_id)
-            get_tvdb_details_for_series_id(series_id)
-            print "shows missing for: " +current_show_name + " show number: " + series_id
+            if series_id not in skip_list:
+                get_episodes_for_series_id(series_id)
+                get_tvdb_details_for_series_id(series_id)
+                print "shows missing for: " +current_show_name + " show number: " + series_id
             #this loops through the tvdb_list and pulls out the series and episode for each item
-            clear_what_is_there()
-            missing(series_id)
-            print 
-            print
+                clear_what_is_there()
+                missing(series_id)
+                print 
+                print
     else:
-        series_id="73028"
+        series_id="278125"
         get_episodes_for_series_id(series_id)
         get_tvdb_details_for_series_id(series_id)
         print "shows missing for: " +current_show_name + " show number: " + series_id
