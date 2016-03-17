@@ -32,7 +32,7 @@ def select_sql(command):
     try:
 ## host, userid, password, database instance
       
-      con = mdb.connect('192.168.1.100', 'xbmc', 'xbmc', 'xbmc_video90');
+      con = mdb.connect('192.168.1.1', 'user', 'pass', 'xbmc_video90');
       cursor = con.cursor()
         
       sql = command
