@@ -1,3 +1,4 @@
+#v1.6 - message if name for series not readable - to investigate
 #v1.5 - put logging back in
 #v1.4 - includes a check for current date, and only looks at episodes that are prior to today
 #v1.3 - highlight duplicates
@@ -32,7 +33,7 @@ def select_sql(command):
     try:
 ## host, userid, password, database instance
       
-      con = mdb.connect('192.168.1.1', 'user', 'pass', 'xbmc_video90');
+      con = mdb.connect('ip', 'user', 'pass', 'xbmc_video90');
       cursor = con.cursor()
         
       sql = command
@@ -68,13 +69,18 @@ def get_tvdb_details_for_series_id(series_id):
     global current_show_name
     global todays_date
     
+    logging.debug("looking for "+series_id)
 
     api_key = "AD9B5756BE643CEA"
     thetvdb = TheTVDB(api_key)
     print "Connecting to TVDB..."
     show = thetvdb.get_show_and_episodes(series_id)
-    show_name= thetvdb.get_show(series_id)
-    current_show_name = show_name.name
+    if thetvdb.get_show(series_id) is None:
+        print "Name error, go to tvdb and put the series id in the url to find series."
+        logging.debug("No name for "+series_id+" was returned)
+    else:
+        show_name= thetvdb.get_show(series_id)
+        current_show_name = show_name.name
     #print current_show_name
     
     for episode in show[1]:
@@ -159,6 +165,7 @@ def main():
   
         get_series_ids()
         skip_list=['73028','112061','213551','75682','83231','79177','72449','76318','82438','268094','76290','191591','78890','73255','83237','75340','80863','81253','78286','278462','83708','84947']
+          
         for i in range(0,len(series_list)):
             series_id=series_list[i][0]
             if series_id not in skip_list:
@@ -171,7 +178,7 @@ def main():
                 print 
                 print
     else:
-        series_id="278125"
+        series_id="263365"
         get_episodes_for_series_id(series_id)
         get_tvdb_details_for_series_id(series_id)
         print "shows missing for: " +current_show_name + " show number: " + series_id
