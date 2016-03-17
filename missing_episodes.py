@@ -77,7 +77,7 @@ def get_tvdb_details_for_series_id(series_id):
     show = thetvdb.get_show_and_episodes(series_id)
     if thetvdb.get_show(series_id) is None:
         print "Name error, go to tvdb and put the series id in the url to find series."
-        logging.debug("No name for "+series_id+" was returned)
+        logging.debug("No name for "+series_id+" was returned")
     else:
         show_name= thetvdb.get_show(series_id)
         current_show_name = show_name.name
