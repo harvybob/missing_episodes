@@ -1,4 +1,5 @@
-#v1.6 - message if name for series not readable - to investigate
+#v1.7 - using config file
+#v1.6 - message if name not returned skip, to investigate further
 #v1.5 - put logging back in
 #v1.4 - includes a check for current date, and only looks at episodes that are prior to today
 #v1.3 - highlight duplicates
@@ -11,18 +12,44 @@ from thetvdbapi import *
 import MySQLdb as mdb
 import time as time
 import datetime
+import ConfigParser
+import logging
+
+Config = ConfigParser.ConfigParser()
+Config.read("./config_missing.ini")
+Config.sections()
+
+def ConfigSectionMap(section):
+    dict1 = {}
+    options = Config.options(section)
+    for option in options:
+        try:
+            dict1[option] = Config.get(section, option)
+            if dict1[option] == -1:
+                DebugPrint("skip: %s" % option)
+        except:
+            print("exception on %s!" % option)
+            dict1[option] = None
+    return dict1
+
+serverip = ConfigSectionMap("SectionOne")['ip']
+username = ConfigSectionMap("SectionOne")['name']
+userpass = ConfigSectionMap("SectionOne")['pass']
+schema = ConfigSectionMap("SectionOne")['schema']
+
 
 tvdb_list = []
 kodi_list = []
 series_list = []
 current_show_name = ""
-specials = "N"
-single_show = "N"
+specials = ConfigSectionMap("SectionTwo")['specials']
+single_show = ConfigSectionMap("SectionTwo")['single_show']
 todays_date=datetime.datetime.now().date()
-import logging
-logging.basicConfig(filename='/home/pi/kodi_missing_errors.log', level=logging.INFO,
+
+logging.basicConfig(filename='.kodi_missing_errors.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(name)s %(message)s')
 logger=logging.getLogger(__name__)
+
 
 
 
@@ -32,8 +59,7 @@ def select_sql(command):
     
     try:
 ## host, userid, password, database instance
-      
-      con = mdb.connect('ip', 'user', 'pass', 'xbmc_video90');
+      con = mdb.connect(serverip, username, userpass, schema);
       cursor = con.cursor()
         
       sql = command
@@ -45,22 +71,6 @@ def select_sql(command):
     except mdb.Error, e:
       logger.error(e)
       
-      
-      
-def info(object, spacing=10, collapse=1):
-    """Print methods and doc strings.
-    
-    Takes module, class, list, dictionary, or string."""
-    methodList = [method for method in dir(object) if callable(getattr(object, method))]
-    processFunc = collapse and (lambda s: " ".join(s.split())) or (lambda s: s)
-    print "\n".join(["%s %s" %
-                      (method.ljust(spacing),
-                       processFunc(str(getattr(object, method).__doc__)))
-                     for method in methodList])
-
-
-
-
 
 
 def get_tvdb_details_for_series_id(series_id):
@@ -77,7 +87,7 @@ def get_tvdb_details_for_series_id(series_id):
     show = thetvdb.get_show_and_episodes(series_id)
     if thetvdb.get_show(series_id) is None:
         print "Name error, go to tvdb and put the series id in the url to find series."
-        logging.debug("No name for "+series_id+" was returned")
+        logging.info("No name for "+series_id+" was returned")
     else:
         show_name= thetvdb.get_show(series_id)
         current_show_name = show_name.name
@@ -164,8 +174,7 @@ def main():
     if single_show <> "Y":
   
         get_series_ids()
-        skip_list=['73028','112061','213551','75682','83231','79177','72449','76318','82438','268094','76290','191591','78890','73255','83237','75340','80863','81253','78286','278462','83708','84947']
-          
+        skip_list = ConfigSectionMap("Others")['skip_list']  
         for i in range(0,len(series_list)):
             series_id=series_list[i][0]
             if series_id not in skip_list:
@@ -178,7 +187,7 @@ def main():
                 print 
                 print
     else:
-        series_id="263365"
+        series_id = ConfigSectionMap("Others")['series_id']
         get_episodes_for_series_id(series_id)
         get_tvdb_details_for_series_id(series_id)
         print "shows missing for: " +current_show_name + " show number: " + series_id
