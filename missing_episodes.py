@@ -46,7 +46,7 @@ specials = ConfigSectionMap("SectionTwo")['specials']
 single_show = ConfigSectionMap("SectionTwo")['single_show']
 todays_date=datetime.datetime.now().date()
 
-logging.basicConfig(filename='.kodi_missing_errors.log', level=logging.INFO,
+logging.basicConfig(filename='./kodi_missing_errors.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(name)s %(message)s')
 logger=logging.getLogger(__name__)
 
