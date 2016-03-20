@@ -41,3 +41,12 @@ format must be 'id','id'
 
 
 The script needs thetvdbapi.py to do the lookup.
+
+
+To run, just execute as a python code:
+python missing_episodes.py
+
+output will go to screen.
+If you want to push to a file then do:
+
+python missing_episodes.py > file.log
