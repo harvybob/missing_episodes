@@ -4,6 +4,10 @@ This script will use the mysql database used by KODI and compare tv series to th
 It will then return a list of episodes which are duplicated,
 and more importantly, any episodes which are missing.
 
+mysqldb must be installed first...
+
+sudo apt-get install python-mysqldb
+
 Couple of things are needed to be configured first.
 
 Using the example_config_missing.ini, change the following:
