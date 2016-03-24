@@ -41,6 +41,7 @@ schema = ConfigSectionMap("SectionOne")['schema']
 tvdb_list = []
 kodi_list = []
 series_list = []
+missing_ep_dict = {}
 current_show_name = ""
 specials = ConfigSectionMap("SectionTwo")['specials']
 single_show = ConfigSectionMap("SectionTwo")['single_show']
@@ -99,10 +100,12 @@ def get_tvdb_details_for_series_id(series_id):
         if episode.first_aired is None :
            # print "no date"
             tvdb_list.append((episode.season_number.zfill(2),episode.episode_number.zfill(2)))
+            missing_ep_dict[(episode.season_number.zfill(2),episode.episode_number.zfill(2))] = episode.name
         elif episode.first_aired < todays_date :
             #print episode.first_aired
         #print "S" + episode.season_number.zfill(2) + "E" + episode.episode_number.zfill(2) + " AD " + str(episode.first_aired)
             tvdb_list.append((episode.season_number.zfill(2),episode.episode_number.zfill(2)))
+            missing_ep_dict[(episode.season_number.zfill(2),episode.episode_number.zfill(2))] = episode.name
         #else :
              #print "future episode of "+ episode.season_number.zfill(2) + episode.episode_number.zfill(2)
 
@@ -155,11 +158,14 @@ def missing(series_id):
         series_episode = tvdb_list.pop()
         season = series_episode[0]
         episode = series_episode[1]
+        name = missing_ep_dict[(season,episode)]
+       
         if specials <> "N":
-            print "Season: "+ season + " Episode: "+ episode
+           
+           print "Season: "+ season + " Episode: "+ episode + ", Name: " + name
         else: 
             if season > "00":
-                print "Season: "+ season + " Episode: "+ episode
+              print "Season: "+ season + " Episode: "+ episode + ", Name: " + name
                 
                 
 
