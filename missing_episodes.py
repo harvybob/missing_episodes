@@ -162,10 +162,10 @@ def missing(series_id):
        
         if specials <> "N":
            
-           print "Season: "+ season + " Episode: "+ episode + ", Name: " + name
+           print "Season: "+ season.encode('utf-8') + " Episode: "+ episode.encode('utf-8') + ", Name: " + name.encode('utf-8')
         else: 
             if season > "00":
-              print "Season: "+ season + " Episode: "+ episode + ", Name: " + name
+              print "Season: "+ season.encode('utf-8') + " Episode: "+ episode.encode('utf-8') + ", Name: " + name.encode('utf-8')
                 
                 
 
