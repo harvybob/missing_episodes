@@ -1,3 +1,4 @@
+#v1.8 - error with unicodes, cast all string for output to unicode
 #v1.7 - using config file
 #v1.6 - message if name not returned skip, to investigate further
 #v1.5 - put logging back in
