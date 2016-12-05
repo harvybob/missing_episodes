@@ -161,7 +161,8 @@ def clear_specials():
         airdate =  str(episode_date_dict[(series,episode)])
         curr_len=len(tvdb_list)
         if series <> "00" :
-            missing_list.append((series,episode, airdate,name))
+            if episode <> "00" :
+                missing_list.append((series,episode, airdate,name))
         
 def keep_specials():
     global tvdb_list
