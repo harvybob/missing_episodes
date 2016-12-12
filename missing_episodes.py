@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # v1.11 - skip series special - episodes with show number 00
 # v1.10 - only print show details if show has missing episodes
 # v1.9 - added air date to output.
