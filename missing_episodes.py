@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+# v1.13 - added series id on duplicates.
+# v1.12 - fixed to work only with kodi 17 +  (db version 107)
 # v1.11 - skip series special - episodes with show number 00
 # v1.10 - only print show details if show has missing episodes
 # v1.9 - added air date to output.
@@ -113,12 +114,14 @@ def get_tvdb_details_for_series_id(series_id):
 def get_episodes_for_series_id(series_id):
     global kodi_list
     # give list of all series and episodes based on tvdb show number
-    kodi_episodes = select_sql("SELECT episode.c12 ,episode.c13 FROM episode,tvshow where tvshow.idShow=episode.idShow and tvshow.c12 = '"+series_id+"' order by episode.c12, episode.c13")
+    #kodi_episodes = select_sql("SELECT episode.c12 ,episode.c13 FROM episode,tvshow where tvshow.idShow=episode.idShow and tvshow.c12 = '"+series_id+"' order by episode.c12, episode.c13")
+    kodi_episodes = select_sql("select episode.c12 ,episode.c13 from episode,tvshow,uniqueid where tvshow.idshow=episode.idshow and tvshow.c12=uniqueid.uniqueid_id and uniqueid.media_type='tvshow' and uniqueid.value='"+series_id+"' order by episode.c12, episode.c13")
+    
     for i in range(0, len(kodi_episodes)):
         kodi_list.append((kodi_episodes[i][0].zfill(2), kodi_episodes[i][1].zfill(2)))
 
 
-def clear_what_is_there():
+def clear_what_is_there(series_id):
     global tvdb_list
     global kodi_list
 
@@ -132,7 +135,8 @@ def clear_what_is_there():
         try:
             location = tvdb_list.index((series, episode))
         except ValueError:
-            print "duplicate entry of Series: " + series + \
+            print "duplicate entry of Seriesid: " + series_id + \
+                " Series: " + series + \
                 " Episode: " + episode
             location = int(-1)
 
@@ -171,7 +175,7 @@ def keep_specials():
 
 def get_series_ids():
     global series_list
-    series_list = select_sql("SELECT tvshow.c12 FROM tvshow")
+    series_list = select_sql("select uniqueid_value from tvshow_view")
 
 
 def show_missing(series_id):
@@ -211,7 +215,7 @@ def main():
                 get_tvdb_details_for_series_id(series_id)
             # this loops through the tvdb_list and pulls out
             # the series and episode for each item
-                clear_what_is_there()
+                clear_what_is_there(series_id)
                 if specials != "Y":
                     clear_specials()
                 else:
@@ -225,7 +229,7 @@ def main():
         get_tvdb_details_for_series_id(series_id)
         # this loops through the tvdb_list and pulls out
         # the series and episode for each item
-        clear_what_is_there()
+        clear_what_is_there(series_id)
         if specials != "Y":
             clear_specials()
         else:
